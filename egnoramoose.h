@@ -26,6 +26,6 @@ void eg_print(Eg *e);
 int eg_check(Eg *e, int row, int col);
 int eg_set(Eg *e, int row, int col);
 int eg_clear(Eg *e, int row, int col);
-void eg_jump(Eg *e, int row, int col, enum loc dir);
+int eg_jump(Eg *e, int row, int col, enum loc dir);
 
 #endif /* EGNORAMOOSE_H */

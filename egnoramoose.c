@@ -108,3 +108,63 @@ int eg_clear(Eg *e, int row, int col)
     }
     return 0;
 }
+
+int eg_jump(Eg *e, int row, int col, enum loc dir)
+{
+    if (eg_check(e, row, col) != 1) {
+        return -1;
+    }
+
+    if (dir == U_LEFT) {
+        int dest = eg_check(e, row-2, col-2);
+        int jumpee = eg_check(e, row-1, col-1);
+        if (dest != 0 || jumpee != 1) {
+            fprintf(stderr, "Invalid jump\n");
+            return -1;
+        }
+        eg_clear(e, row, col);
+        eg_clear(e, row-1, col-1);
+        eg_set(e, row-2, col-2);
+        return 0;
+    }
+    else if (dir == U_RIGHT) {
+        int dest = eg_check(e, row-2, col+2);
+        int jumpee = eg_check(e, row-1, col+1);
+        if (dest != 0 || jumpee != 1) {
+            fprintf(stderr, "Invalid jump\n");
+            return -1;
+        }
+        eg_clear(e, row, col);
+        eg_clear(e, row-1, col+1);
+        eg_set(e, row-2, col+2);
+        return 0;
+    }
+    else if (dir == L_LEFT) {
+        int dest = eg_check(e, row+2, col-2);
+        int jumpee = eg_check(e, row+1, col-1);
+        if (dest != 0 || jumpee != 1) {
+            fprintf(stderr, "Invalid jump\n");
+            return -1;
+        }
+        eg_clear(e, row, col);
+        eg_clear(e, row+1, col-1);
+        eg_set(e, row+2, col-2);
+        return 0;
+    }
+    else if (dir == L_RIGHT) {
+        int dest = eg_check(e, row+2, col+2);
+        int jumpee = eg_check(e, row+1, col+1);
+        if (dest != 0 || jumpee != 1) {
+            fprintf(stderr, "Invalid jump\n");
+            return -1;
+        }
+        eg_clear(e, row, col);
+        eg_clear(e, row+1, col+1);
+        eg_set(e, row+2, col+2);
+        return 0;
+    }
+    else {
+        fprintf(stderr, "Invalid direction\n");
+        return -1;
+    }
+}
