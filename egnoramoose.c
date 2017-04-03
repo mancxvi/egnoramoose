@@ -69,5 +69,42 @@ void eg_print(Eg *e)
 
 int eg_check(Eg *e, int row, int col)
 {
-    
+    if (row > e->size || col > e->size || col > row) {
+        fprintf(stderr, "Invalid pin selected\n");
+        return -1;
+    }
+
+    return e->rows[row]->nodes[col];
+}
+
+int eg_set(Eg *e, int row, int col)
+{
+    int current = eg_check(e, row, col);
+    if (current < 0) {
+        return -1;
+    }
+    else if (current == 1) {
+        fprintf(stderr, "Pin (%d, %d) already set\n", row, col);
+        return -1;
+    }
+    else {
+        e->rows[row]->nodes[col] = 1;
+    }
+    return 0;
+}
+
+int eg_clear(Eg *e, int row, int col)
+{
+    int current = eg_check(e, row, col);
+    if (current < 0) {
+        return -1;
+    }
+    else if (current == 0) {
+        fprintf(stderr, "Pin (%d, %d) already clear", row, col);
+        return -1;
+    }
+    else {
+        e->rows[row]->nodes[col] = 0;
+    }
+    return 0;
 }
