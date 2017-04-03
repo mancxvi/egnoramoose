@@ -8,6 +8,8 @@ a cracker barrel boredom simulator that supports arbitrary sizes
 instructions
 ------------
 
+build with `make`
+
 run with `./egnoramoose [size] [row] [col]`
 
 size is the initial size of the board (default 5)
