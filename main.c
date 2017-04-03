@@ -51,6 +51,7 @@ void game_loop(Eg *e)
     int exit_status = 0;
 
     do {
+        printf("\033[2J\033[;H");
         eg_print(e);
         printf("\n(J)ump, (N)ew, (Q)uit: ");
         fgets(buffer, COMMAND_BUFSZ, stdin);
@@ -121,6 +122,7 @@ void game_loop(Eg *e)
             exit_status = 1;
         }
         if (eg_check_if_any_jumps(e) == 0) {
+            printf("\033[2J\033[;H");
             eg_print(e);
             printf("Game over!\n");
             exit_status = 1;
