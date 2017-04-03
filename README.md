@@ -8,7 +8,7 @@ a cracker barrel boredom simulator that supports arbitrary sizes
 instructions
 ------------
 
-run with `./egnoramoose size row col`
+run with `./egnoramoose [size] [row] [col]`
 
 size is the initial size of the board (default 5)
 
