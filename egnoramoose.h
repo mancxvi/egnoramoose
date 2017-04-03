@@ -1,7 +1,7 @@
 #ifndef EGNORAMOOSE_H
 #define EGNORAMOOSE_H
 
-enum loc { U_LEFT, U_RIGHT, L_LEFT, L_RIGHT };
+enum loc { U_LEFT, U_RIGHT, L_LEFT, L_RIGHT, LEFT, RIGHT };
 
 struct eg_row
 {
@@ -27,5 +27,8 @@ int eg_check(Eg *e, int row, int col);
 int eg_set(Eg *e, int row, int col);
 int eg_clear(Eg *e, int row, int col);
 int eg_jump(Eg *e, int row, int col, enum loc dir);
+int eg_check_jump(Eg *e, int row, int col, enum loc dir);
+int eg_check_jumps(Eg *e, int row, int col);
+int eg_check_if_any_jumps(Eg *e);
 
 #endif /* EGNORAMOOSE_H */

@@ -36,6 +36,8 @@ void eg_row_print(struct eg_row *r)
 
 Eg *eg_make(int sz, int srow, int scol)
 {
+    if (srow > sz || scol > sz || scol > srow || sz <= 0) return NULL;
+
     Eg *new_eg = malloc(sizeof (Eg));
     new_eg->size = sz;
 
@@ -69,8 +71,10 @@ void eg_print(Eg *e)
 
 int eg_check(Eg *e, int row, int col)
 {
-    if (row > e->size || col > e->size || col > row) {
-        fprintf(stderr, "Invalid pin selected\n");
+    if (row >= e->size || col >= e->size || col > row) {
+        return -1;
+    }
+    if (row < 0 || col < 0) {
         return -1;
     }
 
@@ -115,56 +119,136 @@ int eg_jump(Eg *e, int row, int col, enum loc dir)
         return -1;
     }
 
+    if (eg_check_jump(e, row, col, dir) != 0) {
+        fprintf(stderr, "Invalid jump\n");
+        return -1;
+    }
+
+    int mrow = 0;
+    int mcol = 0;
+    int jrow = 0;
+    int jcol = 0;
+
+    if (dir == U_LEFT) {
+        mrow = -2;
+        mcol = -2;
+        jrow = -1;
+        jcol = -1;
+    }
+    else if (dir == U_RIGHT) {
+        mrow = -2;
+        mcol = 0;
+        jrow = -1;
+        jcol = 0;
+    }
+    else if (dir == L_LEFT) {
+        mrow = 2;
+        mcol = 0;
+        jrow = 1;
+        jcol = 0;
+    }
+    else if (dir == L_RIGHT) {
+        mrow = 2;
+        mcol = 2;
+        jrow = 1;
+        jcol = 1;
+    }
+    else if (dir == LEFT) {
+        mrow = 0;
+        mcol = -2;
+        jrow = 0;
+        jcol = -1;
+    }
+    else if (dir == RIGHT) {
+        mrow = 0;
+        mcol = 2;
+        jrow = 0;
+        jcol = 1;
+    }
+
+    eg_clear(e, row, col);
+    eg_clear(e, row+jrow, col+jcol);
+    eg_set(e, row+mrow, col+mcol);
+
+    return 0;
+}
+
+int eg_check_jump(Eg *e, int row, int col, enum loc dir)
+{
+    if (eg_check(e, row, col) != 1) {
+        return -1;
+    }
     if (dir == U_LEFT) {
         int dest = eg_check(e, row-2, col-2);
         int jumpee = eg_check(e, row-1, col-1);
         if (dest != 0 || jumpee != 1) {
-            fprintf(stderr, "Invalid jump\n");
             return -1;
         }
-        eg_clear(e, row, col);
-        eg_clear(e, row-1, col-1);
-        eg_set(e, row-2, col-2);
         return 0;
     }
     else if (dir == U_RIGHT) {
-        int dest = eg_check(e, row-2, col+2);
-        int jumpee = eg_check(e, row-1, col+1);
+        int dest = eg_check(e, row-2, col);
+        int jumpee = eg_check(e, row-1, col);
         if (dest != 0 || jumpee != 1) {
-            fprintf(stderr, "Invalid jump\n");
             return -1;
         }
-        eg_clear(e, row, col);
-        eg_clear(e, row-1, col+1);
-        eg_set(e, row-2, col+2);
         return 0;
     }
     else if (dir == L_LEFT) {
-        int dest = eg_check(e, row+2, col-2);
-        int jumpee = eg_check(e, row+1, col-1);
+        int dest = eg_check(e, row+2, col);
+        int jumpee = eg_check(e, row+1, col);
         if (dest != 0 || jumpee != 1) {
-            fprintf(stderr, "Invalid jump\n");
             return -1;
         }
-        eg_clear(e, row, col);
-        eg_clear(e, row+1, col-1);
-        eg_set(e, row+2, col-2);
         return 0;
     }
     else if (dir == L_RIGHT) {
         int dest = eg_check(e, row+2, col+2);
         int jumpee = eg_check(e, row+1, col+1);
         if (dest != 0 || jumpee != 1) {
-            fprintf(stderr, "Invalid jump\n");
             return -1;
         }
-        eg_clear(e, row, col);
-        eg_clear(e, row+1, col+1);
-        eg_set(e, row+2, col+2);
+        return 0;
+    }
+    else if (dir == LEFT) {
+        int dest = eg_check(e, row, col-2);
+        int jumpee = eg_check(e, row, col-1);
+        if (dest != 0 || jumpee != 1) {
+            return -1;
+        }
+        return 0;
+    }
+    else if (dir == RIGHT) {
+        int dest = eg_check(e, row, col+2);
+        int jumpee = eg_check(e, row, col+1);
+        if (dest != 0 || jumpee != 1) {
+            return -1;
+        }
         return 0;
     }
     else {
-        fprintf(stderr, "Invalid direction\n");
         return -1;
     }
+}
+
+int eg_check_jumps(Eg *e, int row, int col)
+{
+    int jumps = 0;
+    for (int i = 0; i < 6; i++) {
+        if (eg_check_jump(e, row, col, i) >= 0) {
+            jumps++;
+        }
+    }
+    return jumps;
+}
+
+int eg_check_if_any_jumps(Eg *e)
+{
+    int jumps = 0;
+    for (int i = 0; i < e->size; i++) {
+        for (int j = 0; j <= i; j++) {
+            jumps += eg_check_jumps(e, i, j);
+        }
+    }
+    return jumps;
 }
